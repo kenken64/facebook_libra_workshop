@@ -13,7 +13,6 @@ import {
   Account as LibraAccount
 } from "libra-core";
 
-//import bip39 from "bip39";
 const bip39 = require("bip39");
 
 const app = express();

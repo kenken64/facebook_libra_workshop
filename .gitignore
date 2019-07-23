@@ -23,4 +23,5 @@ yarn-error.log*
 
 server/package-lock.json
 server/node_modules
-
+libra_wallet_react/node_modules
+libra_wallet_react/package-lock.json
