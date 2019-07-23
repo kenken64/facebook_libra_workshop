@@ -1,4 +1,5 @@
 import "babel-polyfill";
+// load .env config file where it picks up all the ENV varables
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -12,6 +13,9 @@ import {
   Account as LibraAccount
 } from "libra-core";
 
+//import bip39 from "bip39";
+const bip39 = require("bip39");
+
 const app = express();
 const port = process.env.PORT || 3000;
 app.enable("trust proxy");
@@ -23,8 +27,8 @@ app.use(cors());
 
 const API_URL = "/api";
 const FALLBACK_ADDRESS =
+  process.env.FALLBACL_ACCOUNT ||
   "e5f1d73411a3bfd729f5370593a43fafd019a8f1e22c13ff9efda1a4eb96d97e";
-//72f450b5a860f57e693fc09cbe38f16770463137388c5aaa1a1f1e409e7f0ec5
 
 const client = new LibraClient({ network: LibraNetwork.Testnet });
 
@@ -33,23 +37,30 @@ app.get("/rpc", (req, res) => {
   res.send({ jsonrpc: "2.0", id, method, params });
 });
 
-// create account wallet
+/**
+ * Create libra wallet acoount,
+ * mnemonic seed is a list of words which store all the information needed to recover a  bitcoin wallet. Is generated from bip39 bitcoin package
+ * User is require to keep their mnemonic phrases safe
+ * */
 app.post(`${API_URL}/account`, (req, res) => {
-  const jsonData = req.body;
-  console.log(jsonData.mnemonic);
-  const wallet = new LibraWallet({
-    mnemonic: jsonData.mnemonic
-  });
-  let account = null;
-
-  if (typeof jsonData.secretkey !== "undefined") {
-    console.log(jsonData.secretkey);
-    account = LibraAccount.fromSecretKey(jsonData.secretkey);
-  } else {
-    account = wallet.newAccount();
-  }
-  res.status(200).json(account.getAddress().toHex());
+  createAccount(res);
 });
+
+async function createAccount(res) {
+  const generatedMnemonic = bip39.generateMnemonic();
+  const wallet = new LibraWallet({
+    mnemonic: generatedMnemonic
+  });
+
+  console.log("new account");
+  const account = wallet.newAccount();
+
+  let accountCreated = {
+    address: account.getAddress().toHex(),
+    mnemonic: wallet.mnemonic
+  };
+  res.status(200).json(accountCreated);
+}
 
 /**
  * mint account
@@ -67,7 +78,7 @@ app.get(`${API_URL}/mint-account/:address`, (req, res) => {
   });
 });
 
-app.get(`${API_URL}/balance`, (req, res) => {
+app.get(`${API_URL}/balance/:address`, (req, res) => {
   console.log("get balance ...");
   const address = req.params.address || FALLBACK_ADDRESS;
   getAccountBalance(address, result => {
@@ -76,8 +87,35 @@ app.get(`${API_URL}/balance`, (req, res) => {
   });
 });
 
+async function transferLibra(account, toAccountAddress, amount, cb) {
+  const response = await client.transferCoins(
+    account,
+    toAccountAddress,
+    amount
+  );
+
+  // wait for transaction confirmation
+  await response.awaitConfirmation(client);
+  cb(response);
+}
+
 app.post(`${API_URL}/transactions`, (req, res) => {
-  res.status(200).json({});
+  const jsonData = req.body;
+  const wallet = new LibraWallet({
+    mnemonic: jsonData.from_wallet_mnemonic
+  });
+
+  const wallet2 = new LibraWallet({
+    mnemonic: jsonData.to_wallet_mnemonic
+  });
+  const account = wallet.newAccount();
+  const account2 = wallet2.newAccount();
+  const account2Address = account2.getAddress().toHex();
+  const amount = jsonData.amount;
+  transferLibra(account, account2Address, Number(amount), result => {
+    console.log(result);
+    res.status(200).json(result);
+  });
 });
 
 async function getAccountBalance(accountAddress, cb) {
@@ -91,9 +129,12 @@ async function mintAccount(address, amount, cb) {
   cb(confirmationRefNo);
 }
 
-async function getTransactions(accountNumber, sequenceNumber, cb) {
+async function getTransactions(address, sequenceNumber, cb) {
+  console.log("seq number " + typeof sequenceNumber);
+  const accountState = await client.getAccountState(address);
+  console.log(accountState);
   const transaction = await client.getAccountTransaction(
-    accountNumber,
+    address,
     sequenceNumber
   );
   cb(transaction);
@@ -101,11 +142,17 @@ async function getTransactions(accountNumber, sequenceNumber, cb) {
 
 app.get(`${API_URL}/transactions/:address/:sequenceNo`, (req, res) => {
   const address = req.params.address || FALLBACK_ADDRESS;
+  console.log(address);
   const sequenceNumber = req.params.sequenceNo || 0;
-  getTransactions(address, sequenceNumber, transaction => {
-    console.log(transaction);
-    res.status(200).json(transaction);
-  });
+  try {
+    getTransactions(address, parseInt(sequenceNumber), transaction => {
+      console.log(transaction);
+      res.status(200).json(transaction);
+    });
+  } catch (error) {
+    console.log("ERROR !!" + error);
+    res.status(500).json(error);
+  }
 });
 
 app.listen(port, () => {
