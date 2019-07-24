@@ -8,22 +8,37 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import firebase from "./Firestore";
+import { LIBRA_API_URL } from "./config";
 
 function GenerateWallet(props) {
   const [walletName, setWalletName] = useState("Default wallet");
-  const [address, setWalletAdress] = useState("243dsfdfdds");
-  const [mnemonic, setWalletMnemonic] = useState(
-    "hello kitty last night worry"
-  );
 
   function saveWalletTofirebase() {
     console.log("generate new wallet store to firestore...");
     props.handleClose();
     const db = firebase.firestore();
-    const walletRef = db.collection("wallet").add({
-      walletName: walletName
-    });
-    setWalletName("");
+    let bodyValue = {};
+    fetch(`${LIBRA_API_URL}/account`, {
+      method: "post",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bodyValue)
+    })
+      .then(function(response) {
+        console.log(response);
+        return response.json();
+      })
+      .then(function(data) {
+        console.log(data);
+        db.collection("wallet").add({
+          walletName: walletName,
+          address: data.address,
+          mnemonic: data.mnemonic
+        });
+        setWalletName("");
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   function updateWalletName(event) {
