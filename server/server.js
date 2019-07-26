@@ -47,6 +47,7 @@ app.post(`${API_URL}/account`, (req, res) => {
 
 async function createAccount(res) {
   const generatedMnemonic = bip39.generateMnemonic();
+  console.log(generatedMnemonic);
   const wallet = new LibraWallet({
     mnemonic: generatedMnemonic
   });
@@ -56,13 +57,14 @@ async function createAccount(res) {
 
   let accountCreated = {
     address: account.getAddress().toHex(),
-    mnemonic: wallet.mnemonic
+    mnemonic: generatedMnemonic
   };
   res.status(200).json(accountCreated);
 }
 
 /**
- * mint account
+ * Mint account, this function is similar to those blockchain mining program
+ * Create a libra out of the blockchain network and commit to the current libra reserve
  */
 app.get(`${API_URL}/mint-account/:address`, (req, res) => {
   console.log(req.params.address);
@@ -77,6 +79,9 @@ app.get(`${API_URL}/mint-account/:address`, (req, res) => {
   });
 });
 
+/**
+ * Check libra balance
+ */
 app.get(`${API_URL}/balance/:address`, (req, res) => {
   console.log("get balance ...");
   const address = req.params.address || FALLBACK_ADDRESS;
@@ -98,6 +103,9 @@ async function transferLibra(account, toAccountAddress, amount, cb) {
   cb(response);
 }
 
+/**
+ * transfer the libra coin from one party to another
+ */
 app.post(`${API_URL}/transactions`, (req, res) => {
   const jsonData = req.body;
   const wallet = new LibraWallet({
@@ -139,6 +147,9 @@ async function getTransactions(address, sequenceNumber, cb) {
   cb(transaction);
 }
 
+/**
+ * Retrieve transaction history of the transfered libra
+ */
 app.get(`${API_URL}/transactions/:address/:sequenceNo`, (req, res) => {
   const address = req.params.address || FALLBACK_ADDRESS;
   console.log(address);
