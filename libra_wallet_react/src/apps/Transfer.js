@@ -1,6 +1,15 @@
-import React, { useState } from "react";
-function Transfer(props) {
-  return <h1>Transfer</h1>;
+import React, { Component } from "react";
+
+class Transfer extends Component {
+  constructor() {
+    super();
+  }
+
+  componentDidMount() {}
+
+  render() {
+    return <p />;
+  }
 }
 
 export default Transfer;

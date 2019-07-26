@@ -42,6 +42,7 @@ app.get("/rpc", (req, res) => {
  * User is require to keep their mnemonic phrases safe
  * */
 app.post(`${API_URL}/account`, (req, res) => {
+  console.log("Create new Libra account");
   createAccount(res);
 });
 
@@ -67,6 +68,7 @@ async function createAccount(res) {
  * Create a libra out of the blockchain network and commit to the current libra reserve
  */
 app.get(`${API_URL}/mint-account/:address`, (req, res) => {
+  console.log("Minting Libra ... from blockchain network");
   console.log(req.params.address);
   console.log(req.query.amount);
   const address = req.params.address || FALLBACK_ADDRESS;
@@ -76,6 +78,8 @@ app.get(`${API_URL}/mint-account/:address`, (req, res) => {
 
   mintAccount(address, amount, result => {
     res.status(200).json({ confirmation: result });
+  }).catch(error => {
+    console.log(error);
   });
 });
 
@@ -83,11 +87,14 @@ app.get(`${API_URL}/mint-account/:address`, (req, res) => {
  * Check libra balance
  */
 app.get(`${API_URL}/balance/:address`, (req, res) => {
-  console.log("get balance ...");
+  console.log("Check Libra balance ...");
   const address = req.params.address || FALLBACK_ADDRESS;
   getAccountBalance(address, result => {
     console.log("balance> " + result);
-    res.status(200).json({ balance: result });
+    res.status(200).json({
+      address: address,
+      balance: result
+    });
   });
 });
 
@@ -107,6 +114,7 @@ async function transferLibra(account, toAccountAddress, amount, cb) {
  * transfer the libra coin from one party to another
  */
 app.post(`${API_URL}/transactions`, (req, res) => {
+  console.log("Performing Libra transfer");
   const jsonData = req.body;
   const wallet = new LibraWallet({
     mnemonic: jsonData.from_wallet_mnemonic
@@ -119,6 +127,9 @@ app.post(`${API_URL}/transactions`, (req, res) => {
   const account2 = wallet2.newAccount();
   const account2Address = account2.getAddress().toHex();
   const amount = jsonData.amount;
+  console.log(account.getAddress().toHex());
+  console.log(account2Address);
+  console.log(amount);
   transferLibra(account, account2Address, Number(amount), result => {
     console.log(result);
     res.status(200).json(result);
@@ -151,6 +162,7 @@ async function getTransactions(address, sequenceNumber, cb) {
  * Retrieve transaction history of the transfered libra
  */
 app.get(`${API_URL}/transactions/:address/:sequenceNo`, (req, res) => {
+  console.log("Query transactions with seqNo");
   const address = req.params.address || FALLBACK_ADDRESS;
   console.log(address);
   const sequenceNumber = req.params.sequenceNo || 0;

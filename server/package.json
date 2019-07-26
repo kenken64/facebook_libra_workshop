@@ -19,7 +19,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
-    "libra-core": "^1.0.4"
+    "libra-core": "^1.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",

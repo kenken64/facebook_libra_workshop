@@ -1,0 +1,15 @@
+.root {
+  width: "100%";
+  maxwidth: 600;
+  backgroundcolor: theme.palette.background.paper;
+}
+
+.button {
+  margin: theme.spacing(1);
+}
+
+. paper {
+  padding: theme.spacing(2);
+  textalign: "center";
+  color: theme.palette.text.secondary;
+}

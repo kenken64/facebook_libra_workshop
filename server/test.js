@@ -1,9 +1,3 @@
-require("@babel/register")({
-  presets: ["@babel/preset-env"]
-});
-
-import { LibraWallet, LibraClient } from "libra-core";
-
 async function main() {
   const client = new LibraClient({ network: LibraNetwork.Testnet });
   const wallet = new LibraWallet({
@@ -19,4 +13,4 @@ async function main() {
   await response.awaitConfirmation(client);
 }
 
-main();
+await main();

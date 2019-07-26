@@ -16,8 +16,6 @@ import { withStyles } from "@material-ui/core";
 import { createMuiTheme } from "@material-ui/core/styles";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 import { red, amber } from "@material-ui/core/colors";
-import Paper from "@material-ui/core/Paper";
-import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 
@@ -101,7 +99,7 @@ function App() {
               fontWeight="fontWeightMedium"
               color="inherit"
             >
-              Libra Wallet
+              Libra Workshop
             </Typography>
             <div className={classes.toolbarButtons}>
               <IconButton
@@ -116,38 +114,37 @@ function App() {
           </Toolbar>
         </AppBar>
         <GenerateWallet open={open} handleClose={handleClose} />
-        <Paper className={classes.content}>
-          <Grid
-            container
-            spacing={1}
-            direction="row"
-            justify="center"
-            alignItems="stretch"
+
+        <Grid
+          container
+          spacing={1}
+          direction="row"
+          justify="center"
+          alignItems="stretch"
+        >
+          <SelectPage selectedPage={value} />
+          <BottomNavigation
+            value={value}
+            onChange={handleChange}
+            className={classes.stickToBottom}
           >
-            <SelectPage selectedPage={value} />
-            <BottomNavigation
-              value={value}
-              onChange={handleChange}
-              className={classes.stickToBottom}
-            >
-              <BottomNavigationAction
-                label="Account"
-                value="account"
-                icon={<AccountBalanceIcon />}
-              />
-              <BottomNavigationAction
-                label="Transfer"
-                value="transfer"
-                icon={<AttachedMoneyIcon />}
-              />
-              <BottomNavigationAction
-                label="Mint"
-                value="mint"
-                icon={<WavesIcon />}
-              />
-            </BottomNavigation>
-          </Grid>
-        </Paper>
+            <BottomNavigationAction
+              label="Account"
+              value="account"
+              icon={<AccountBalanceIcon />}
+            />
+            <BottomNavigationAction
+              label="Transfer"
+              value="transfer"
+              icon={<AttachedMoneyIcon />}
+            />
+            <BottomNavigationAction
+              label="Mint"
+              value="mint"
+              icon={<WavesIcon />}
+            />
+          </BottomNavigation>
+        </Grid>
       </div>
     </MuiThemeProvider>
   );
