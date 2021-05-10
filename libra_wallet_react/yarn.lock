@@ -4298,8 +4298,8 @@ hoist-non-react-statics@^3.2.1:
     react-is "^16.7.0"
 
 hosted-git-info@^2.1.4:
-  version "2.7.1"
-  resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.7.1.tgz#97f236977bd6e125408930ff6de3eec6281ec047"
+  version "2.8.9"
+  resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.8.9.tgz#dffc0bf9a21c02209090f2aa69429e1414daf3f9"
 
 hpack.js@^2.1.6:
   version "2.1.6"
@@ -7252,7 +7252,7 @@ prompts@^2.0.1:
     kleur "^3.0.2"
     sisteransi "^1.0.0"
 
-prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   dependencies:
@@ -7356,6 +7356,17 @@ punycode@^2.1.0, punycode@^2.1.1:
 q@^1.1.2:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
+
+qr.js@0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/qr.js/-/qr.js-0.0.0.tgz#cace86386f59a0db8050fa90d9b6b0e88a1e364f"
+
+qrcode.react@^0.9.3:
+  version "0.9.3"
+  resolved "https://registry.yarnpkg.com/qrcode.react/-/qrcode.react-0.9.3.tgz#91de1287912bdc5ccfb3b091737b828d6ced60c5"
+  dependencies:
+    prop-types "^15.6.0"
+    qr.js "0.0.0"
 
 qs@6.5.2, qs@~6.5.2:
   version "6.5.2"
